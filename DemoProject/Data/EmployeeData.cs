@@ -1,7 +1,7 @@
 ﻿using DemoProject.API.Model.Domain;
 using DemoProject.Model.Domain;
 
-namespace DemoProject.API.ServiceData
+namespace DemoProject.API.Data
 {
     public static class EmployeeData
     {
