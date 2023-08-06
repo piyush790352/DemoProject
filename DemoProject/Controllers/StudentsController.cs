@@ -4,6 +4,8 @@ using DemoProject.Model.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using System.Xml.Linq;
+using System.Net;
 
 namespace DemoProject.Controllers
 {
@@ -24,7 +26,7 @@ namespace DemoProject.Controllers
             var studentResult = StudentsData.Students.FirstOrDefault(x => x.Id == id);
             if(studentResult == null)
             {
-                return NotFound();
+                return this.NotFound("No Record found.");
             }
             return Ok(studentResult);
         }
@@ -42,7 +44,7 @@ namespace DemoProject.Controllers
             var empResult = EmployeeData.Employees.FirstOrDefault(x => x.EmpId == id);
             if (empResult == null)
             {
-                return NotFound();
+                return this.NotFound("No Record found.");
             }
             return Ok(empResult);
         }
