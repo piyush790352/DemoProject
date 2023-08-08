@@ -6,47 +6,45 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.Xml.Linq;
 using System.Net;
+using DemoProject.API.Service;
+using DemoProject.API.ServiceRepository;
 
 namespace DemoProject.Controllers
 {
-    [Route("api")]
+    [Route("api/[controller]")]
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        [HttpGet("/Students")]
-        public IActionResult GetAll()
+        [HttpGet("Students")]
+        public async Task<IActionResult> GetStudentDetails()
         {
-            var students = StudentsData.Students.ToList();
-            return Ok(students);
-        }
-        [HttpGet]
-        [Route("/Students/{id}")]
-        public IActionResult GetById(int id)
-        {           
-            var studentResult = StudentsData.Students.FirstOrDefault(x => x.Id == id);
-            if(studentResult == null)
+            var response =  await StudentRepository.GetStudentDetail();
+            if(response == null)
             {
-                return this.NotFound("No Record found.");
+                return BadRequest();
             }
-            return Ok(studentResult);
+            return Ok(response);
         }
-
-        [HttpGet("/Employees")]
-        public IActionResult GetEmpAll()
+        [HttpGet("Students/{id}")]
+        public async Task<IActionResult> GetStudentDetailsById([FromRoute] int id)
         {
-            var empResult = EmployeeData.Employees.ToList();
-            return Ok(empResult);
-        }
-        [HttpGet]
-        [Route("/Employees/{id}")]
-        public IActionResult GetEmpById(int id)
-        {
-            var empResult = EmployeeData.Employees.FirstOrDefault(x => x.EmpId == id);
-            if (empResult == null)
+            var response = await StudentRepository.GetStudentDetailsByIds(id);
+            
+            if(response == null)
             {
-                return this.NotFound("No Record found.");
+                return BadRequest();
             }
-            return Ok(empResult);
+            return Ok(response);
+        }
+        [HttpPost("Students")]
+        public async Task<IActionResult> AddStudent([FromBody] Student studentRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = await StudentRepository.AddStudent(studentRequest);
+            return Ok(response);
         }
     }
 }
