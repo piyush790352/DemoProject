@@ -1,6 +1,7 @@
 ﻿using DemoProject.API.Data;
 using DemoProject.API.Model.Domain;
 using DemoProject.Model.Domain;
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -15,7 +16,7 @@ namespace DemoProject.API.ServiceRepository
                 var employees = EmployeeData.GetEmployees().ToList();
                 if (employees != null)
                 {
-                    StudentsData.SaveStudent();
+                    EmployeeData.SaveEmployee();
                     return new Response<List<Employee>>
                     {
                         Result = employees,
@@ -69,7 +70,7 @@ namespace DemoProject.API.ServiceRepository
         {
             try
             {                
-                var employees =  new Employee()
+                var employee=  new Employee()
                 {
                     EmpId = employeeRequest.EmpId,
                     EmpFirstName = employeeRequest.EmpFirstName,
@@ -78,13 +79,16 @@ namespace DemoProject.API.ServiceRepository
                     EmpEmail = employeeRequest.EmpEmail,
                     IsEmployee = employeeRequest.IsEmployee
                 };
-                if (employees != null)
+                if (employee != null)
                 {
+                    string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json");
+                    var employees = JsonSerializer.Deserialize<List<Employee>>(text);
+                    employees.Add(employee);
                     string json = JsonSerializer.Serialize(employees);
-                    File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeJsonData\EmployeeJsonData.json", json);
+                    File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json", json);
                     return new Response<Employee>
                     {
-                        Result = employees,
+                        Result = employee,
                         StatusMessage = "Ok"
                     };                                      
                 }

@@ -16,7 +16,7 @@ namespace DemoProject.API.Service
                 var students = StudentsData.GetStudents().ToList();
                 if(students != null)
                 {
-                    EmployeeData.SaveEmployee();
+                    StudentsData.SaveStudent();
                     return new Response<List<Student>>
                     {
                         Result = students,
@@ -82,8 +82,11 @@ namespace DemoProject.API.Service
                 };
                 if (studentResult != null)
                 {
-                    string json = JsonSerializer.Serialize(studentResult);
-                    File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentJsonData\StudentJsonData.json", json);
+                    string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json");
+                    var students = JsonSerializer.Deserialize<List<Student>>(text);
+                    students.Add(studentResult);
+                    string json = JsonSerializer.Serialize(students);
+                    File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json", json);
                     return new Response<Student>
                     {
                         Result = studentResult,

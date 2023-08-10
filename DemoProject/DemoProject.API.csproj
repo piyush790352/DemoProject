@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Json\EmployeeJsonData\" />
-    <Folder Include="Json\StudentJsonData\" />
+    <Folder Include="Json\EmployeeListJsonData\" />
+    <Folder Include="Json\StudentListJsonData\" />
   </ItemGroup>
 </Project>

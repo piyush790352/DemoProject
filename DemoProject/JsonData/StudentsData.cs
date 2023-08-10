@@ -14,7 +14,7 @@ namespace DemoProject.API.Data
                 return false;
             }
             string json = JsonSerializer.Serialize(Students);
-            File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentJsonData\StudentListJsonData.json", json);
+            File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json", json);
             return true;
         }
 
