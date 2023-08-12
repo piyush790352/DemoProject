@@ -5,7 +5,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace DemoProject.API.ServiceRepository
+namespace DemoProject.API.Repository
 {
     public class EmployeeRepository
     {
@@ -13,24 +13,39 @@ namespace DemoProject.API.ServiceRepository
         {
             try
             {
-                var employees = EmployeeData.GetEmployees().ToList();
-                if (employees != null)
+
+                string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json");
+                var employee = JsonSerializer.Deserialize<List<Employee>>(text);
+                if (employee.Count == 0)
                 {
-                    EmployeeData.SaveEmployee();
-                    return new Response<List<Employee>>
+                    var employees = EmployeeData.GetEmployees().ToList();
+                    if (employees != null)
                     {
-                        Result = employees,
-                        StatusMessage = "Ok"
-                    };
+                        string json = JsonSerializer.Serialize(employees);
+                        File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json", json);
+                        return new Response<List<Employee>>
+                        {
+                            Result = employees,
+                            StatusMessage = "Ok"
+                        };
+                    }
+                    else
+                    {
+                        return new Response<List<Employee>>
+                        {
+                            StatusMessage = "No recored found!."
+                        };
+                    }
+
                 }
                 else
                 {
                     return new Response<List<Employee>>
                     {
-                        StatusMessage = "No Data found..!"
+                        Result = employee,
+                        StatusMessage = "Ok"
                     };
                 }
-
             }
             catch (Exception ex)
             {
@@ -38,13 +53,13 @@ namespace DemoProject.API.ServiceRepository
             }
         }
 
-        public static async Task<Response<Employee>> GetEmployeeDetailByIds(int id)
+        public static async Task<Response<Employee>> GetEmployeeDetailByIds(Guid id)
         {
             try
             {
                 var employeeResult = EmployeeData.GetEmployees().FirstOrDefault(x => x.EmpId == id);
                 if (employeeResult != null)
-                {                   
+                {
                     return new Response<Employee>
                     {
                         Result = employeeResult,
@@ -69,8 +84,8 @@ namespace DemoProject.API.ServiceRepository
         public static async Task<Response<Employee>> AddEmployee(Employee employeeRequest)
         {
             try
-            {                
-                var employee=  new Employee()
+            {
+                var employee = new Employee()
                 {
                     EmpId = employeeRequest.EmpId,
                     EmpFirstName = employeeRequest.EmpFirstName,
@@ -83,27 +98,38 @@ namespace DemoProject.API.ServiceRepository
                 {
                     string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json");
                     var employees = JsonSerializer.Deserialize<List<Employee>>(text);
+                    foreach (var item in employees)
+                    {
+                        if (item.EmpId == employeeRequest.EmpId)
+                        {
+                            return new Response<Employee>
+                            {
+                                StatusMessage = "This record already exist."
+                            };
+                        }
+                    }
                     employees.Add(employee);
                     string json = JsonSerializer.Serialize(employees);
                     File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json", json);
+
                     return new Response<Employee>
                     {
                         Result = employee,
                         StatusMessage = "Ok"
-                    };                                      
+                    };
                 }
                 else
                 {
                     return new Response<Employee>
                     {
-                        StatusMessage = "No Data found..!"
+                        StatusMessage = "No Record found..!"
                     };
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
-        }       
+        }
     }
 }

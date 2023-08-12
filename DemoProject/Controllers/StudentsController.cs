@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Net;
 using DemoProject.API.Service;
-using DemoProject.API.ServiceRepository;
+using DemoProject.API.Repository;
 
 namespace DemoProject.Controllers
 {

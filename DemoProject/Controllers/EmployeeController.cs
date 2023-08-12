@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Net;
 using DemoProject.API.Service;
-using DemoProject.API.ServiceRepository;
+using DemoProject.API.Repository;
 
 namespace DemoProject.API.Controllers
 {
@@ -15,7 +15,7 @@ namespace DemoProject.API.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {     
-        [HttpGet("Employees")]
+        [HttpGet]
         public async Task<IActionResult> GetEmployeeDetails()
         {            
             if (!ModelState.IsValid)
@@ -26,8 +26,8 @@ namespace DemoProject.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("Employees/{id}")]        
-        public async Task<IActionResult> GetEmployeeDetailById(int id)
+        [HttpGet("/{id}")]        
+        public async Task<IActionResult> GetEmployeeDetailById(Guid id)
         {
             if (!ModelState.IsValid)
             {
@@ -36,12 +36,12 @@ namespace DemoProject.API.Controllers
             var response = await EmployeeRepository.GetEmployeeDetailByIds(id);
             return Ok(response);
         }
-        [HttpPost("Employees")]
+        [HttpPost]
         public async Task<IActionResult> AddEmployee([FromBody] Employee employeeRequest)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Invalid data. Please recheck!");
             }
             var response = await EmployeeRepository.AddEmployee(employeeRequest);
             return Ok(response);
