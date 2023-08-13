@@ -1,6 +1,5 @@
 ﻿using DemoProject.API.Data;
 using DemoProject.API.Model.Domain;
-using DemoProject.Model.Domain;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -13,7 +12,6 @@ namespace DemoProject.API.Repository
         {
             try
             {
-
                 string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json");
                 var employee = JsonSerializer.Deserialize<List<Employee>>(text);
                 if (employee.Count == 0)
@@ -36,7 +34,6 @@ namespace DemoProject.API.Repository
                             StatusMessage = "No recored found!."
                         };
                     }
-
                 }
                 else
                 {
@@ -53,11 +50,13 @@ namespace DemoProject.API.Repository
             }
         }
 
-        public static async Task<Response<Employee>> GetEmployeeDetailByIds(Guid id)
+        public static async Task<Response<Employee>> GetEmployeeDetailByIds(int Id)
         {
             try
             {
-                var employeeResult = EmployeeData.GetEmployees().FirstOrDefault(x => x.EmpId == id);
+                string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\EmployeeListJsonData\EmployeeJsonData.json");
+                var employee = JsonSerializer.Deserialize<List<Employee>>(text);
+                var employeeResult = employee.FirstOrDefault(x => x.EmpId == Id);
                 if (employeeResult != null)
                 {
                     return new Response<Employee>
@@ -70,7 +69,7 @@ namespace DemoProject.API.Repository
                 {
                     return new Response<Employee>
                     {
-                        StatusMessage = "No Data found..!"
+                        StatusMessage = "No record found.!"
                     };
                 }
 
@@ -81,13 +80,19 @@ namespace DemoProject.API.Repository
             }
         }
 
+        private static int id = 1;
+        public static int generateId()
+        {
+            return id++;
+        }
+
         public static async Task<Response<Employee>> AddEmployee(Employee employeeRequest)
         {
             try
             {
                 var employee = new Employee()
                 {
-                    EmpId = employeeRequest.EmpId,
+                    EmpId = generateId(),
                     EmpFirstName = employeeRequest.EmpFirstName,
                     EmpLastName = employeeRequest.EmpLastName,
                     Gender = employeeRequest.Gender,

@@ -1,9 +1,8 @@
 ﻿using DemoProject.API.Data;
 using DemoProject.API.Model.Domain;
-using DemoProject.Model.Domain;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.Design;
+using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DemoProject.API.Service
 {
@@ -12,25 +11,39 @@ namespace DemoProject.API.Service
         public static async Task<Response<List<Student>>> GetStudentDetail()
         {
             try
-            {              
-                var students = StudentsData.GetStudents().ToList();
-                if(students != null)
+            {
+                string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json");
+                var student = JsonSerializer.Deserialize<List<Student>>(text);
+                if (student.Count == 0)
                 {
-                    StudentsData.SaveStudent();
-                    return new Response<List<Student>>
+                    var students = StudentsData.GetStudents().ToList();
+                    if (students != null)
                     {
-                        Result = students,
-                        StatusMessage = "Ok"
-                    };
+                        string json = JsonSerializer.Serialize(students);
+                        File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json", json);
+                        return new Response<List<Student>>
+                        {
+                            Result = students,
+                            StatusMessage = "Ok"
+                        };
+                    }
+                    else
+                    {
+                        return new Response<List<Student>>
+                        {
+                            StatusMessage = "No record found.!"
+                        };
+                    }
                 }
                 else
                 {
                     return new Response<List<Student>>
                     {
-                        StatusMessage = "No Data found..!"
+                        Result = student,
+                        StatusMessage = "Ok"
                     };
                 }
-                
+
             }
             catch(Exception ex) 
             {
@@ -38,11 +51,13 @@ namespace DemoProject.API.Service
             }           
         }
 
-        public static async Task<Response<Student>> GetStudentDetailsByIds(int id)
+        public static async Task<Response<Student>> GetStudentDetailsByIds(int Id)
         {
             try
             {
-                var studentResult = StudentsData.GetStudents().FirstOrDefault(x => x.StdId == id);
+                string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json");
+                var student = JsonSerializer.Deserialize<List<Student>>(text);
+                var studentResult = student.FirstOrDefault(x => x.StdId == Id);
                 if (studentResult != null)
                 {
                     return new Response<Student>
@@ -55,7 +70,7 @@ namespace DemoProject.API.Service
                 {
                     return new Response<Student>
                     {
-                        StatusMessage = "No Data found..!"
+                        StatusMessage = "No record found.!"
                     };
                 }
 
@@ -66,13 +81,19 @@ namespace DemoProject.API.Service
             }
         }
 
+
+        private static int id = 1;
+        public static int generateId()
+        {
+            return id++;
+        }
         public static async Task<Response<Student>> AddStudent(Student studentRequest)
         {
             try
             {
                 var studentResult = new Student()
                 {
-                    StdId = studentRequest.StdId,
+                    StdId = generateId(),
                     StdFirstName = studentRequest.StdFirstName,
                     StdLastName = studentRequest.StdLastName,
                     Gender = studentRequest.Gender,
@@ -84,6 +105,16 @@ namespace DemoProject.API.Service
                 {
                     string text = File.ReadAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json");
                     var students = JsonSerializer.Deserialize<List<Student>>(text);
+                    foreach (var item in students)
+                    {
+                        if (item.StdId == studentRequest.StdId)
+                        {
+                            return new Response<Student>
+                            {
+                                StatusMessage = "This record already exist."
+                            };
+                        }
+                    }
                     students.Add(studentResult);
                     string json = JsonSerializer.Serialize(students);
                     File.WriteAllText(@"C:\Users\HP\source\repos\DemoProject\DemoProject\Json\StudentListJsonData\StudentJsonData.json", json);

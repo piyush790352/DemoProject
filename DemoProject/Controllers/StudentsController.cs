@@ -1,6 +1,5 @@
 ﻿using DemoProject.API.Model.Domain;
 using DemoProject.API.Data;
-using DemoProject.Model.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
@@ -15,7 +14,7 @@ namespace DemoProject.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        [HttpGet("Students")]
+        [HttpGet("Student")]
         public async Task<IActionResult> GetStudentDetails()
         {
             var response =  await StudentRepository.GetStudentDetail();
@@ -25,10 +24,10 @@ namespace DemoProject.Controllers
             }
             return Ok(response);
         }
-        [HttpGet("Students/{id}")]
-        public async Task<IActionResult> GetStudentDetailsById([FromRoute] int id)
+        [HttpGet("Student/{Id}")]
+        public async Task<IActionResult> GetStudentDetailsById(int Id)
         {
-            var response = await StudentRepository.GetStudentDetailsByIds(id);
+            var response = await StudentRepository.GetStudentDetailsByIds(Id);
             
             if(response == null)
             {
@@ -36,12 +35,12 @@ namespace DemoProject.Controllers
             }
             return Ok(response);
         }
-        [HttpPost("Students")]
+        [HttpPost("Student")]
         public async Task<IActionResult> AddStudent([FromBody] Student studentRequest)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest("Invalid data. Please recheck!");
             }
             var response = await StudentRepository.AddStudent(studentRequest);
             return Ok(response);

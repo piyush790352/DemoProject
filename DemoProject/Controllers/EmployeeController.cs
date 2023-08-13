@@ -1,6 +1,5 @@
 ﻿using DemoProject.API.Model.Domain;
 using DemoProject.API.Data;
-using DemoProject.Model.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
@@ -26,14 +25,14 @@ namespace DemoProject.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("/{id}")]        
-        public async Task<IActionResult> GetEmployeeDetailById(Guid id)
+        [HttpGet("/{Id}")]        
+        public async Task<IActionResult> GetEmployeeDetailById(int Id)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var response = await EmployeeRepository.GetEmployeeDetailByIds(id);
+            var response = await EmployeeRepository.GetEmployeeDetailByIds(Id);
             return Ok(response);
         }
         [HttpPost]
